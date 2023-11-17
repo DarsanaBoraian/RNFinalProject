@@ -4,7 +4,8 @@ import {View, StyleSheet, Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Home from './Home';
-import Settings from './Settings';
+import Urdu from './Urdu';
+import French from './French';
 
 /**
  * https://reactnavigation.org/docs/drawer-navigator
@@ -26,7 +27,8 @@ function NavDrawer() {
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Settings" component={Settings} />
+      <Drawer.Screen name="Urdu" component={Urdu} />
+      <Drawer.Screen name="French" component={French} />
     </Drawer.Navigator>
   );
 }

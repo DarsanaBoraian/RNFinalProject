@@ -1,6 +1,7 @@
 import {View, Text, Button, TouchableOpacity, SafeAreaView} from 'react-native';
 import React from 'react';
 import Auth from '../services/auth';
+import LocaleHelper from '../helpers/LocaleHelper';
 
 export default function Home() {
   return (
@@ -13,6 +14,8 @@ export default function Home() {
         }}>
         <Text>Sign Out</Text>
       </TouchableOpacity>
+
+      <Text>{LocaleHelper.t('howru')}</Text>
     </SafeAreaView>
   );
 }
