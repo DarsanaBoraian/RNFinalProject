@@ -36,11 +36,23 @@ const Drawer = createDrawerNavigator();
 
 function NavDrawer() {
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator
+      initialRouteName="Urdu"
+      screenOptions={{
+        drawerLabelStyle: {
+          color: 'black', // Change this to your default color
+          fontWeight: 'bold', // Add additional styles if needed
+        },
+        drawerActiveTintColor: 'green', // Change this to your desired active color
+        drawerInactiveTintColor: 'black', // Change this to your desired inactive color
+      }}>
       <Drawer.Screen
         name="Home"
         component={Home}
         options={{
+          drawerIcon: ({focused, size}) => (
+            <ArrowRightCircleIcon size={40} strokeWidth={4.5} color={'black'} />
+          ),
           headerRight: () => {
             return (
               <TouchableOpacity
@@ -60,6 +72,9 @@ function NavDrawer() {
         name="Urdu"
         component={Urdu}
         options={{
+          drawerIcon: ({focused, size}) => (
+            <ArrowRightCircleIcon size={40} strokeWidth={4.5} color={'black'} />
+          ),
           headerRight: () => {
             return (
               <TouchableOpacity
@@ -79,6 +94,9 @@ function NavDrawer() {
         name="French"
         component={French}
         options={{
+          drawerIcon: ({focused, size}) => (
+            <ArrowRightCircleIcon size={40} strokeWidth={4.5} color={'black'} />
+          ),
           headerRight: () => {
             return (
               <TouchableOpacity
