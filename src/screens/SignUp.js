@@ -1,6 +1,7 @@
 import {
   View,
   StyleSheet,
+  Button,
   TextInput,
   TouchableOpacity,
   Image,
@@ -10,11 +11,47 @@ import {
 import React, {useState} from 'react';
 import Auth from '../services/auth';
 import appColors from '../constants/appColors';
+import {useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import InputControl from '../components/InputControl';
+import * as yup from 'yup';
+
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .required('First Name is required')
+    .matches(/^[a-zA-Z\s]+$/, 'First name must contain only letters'),
+
+  email: yup
+    .string()
+    .required('Email is required')
+    .email('Invalid email')
+    .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'Invalid email'),
+
+  password: yup
+    .string()
+    .required('Last Name is required')
+    .matches(/^[a-zA-Z\s]+$/, 'password must contain only letters and numbers'),
+});
 
 export default function SignUp() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [name, setName] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    mode: 'all',
+    resolver: yupResolver(schema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -22,7 +59,7 @@ export default function SignUp() {
         source={require('../../assets/images/welcomecat.png')} // Replace 'path_to_your_image' with the actual image path
         style={styles.image}
       />
-      <View style={styles.inputContainer}>
+      {/* <View style={styles.inputContainer}>
         <TextInput
           placeholder="Name"
           onChangeText={text => setName(text)}
@@ -39,15 +76,43 @@ export default function SignUp() {
           style={styles.input}
           secureTextEntry
         />
+      </View> */}
+      <View style={styles.inputContainer}>
+        <InputControl
+          control={control}
+          name={'name'}
+          placeholder={'Enter First name'}
+          error={errors?.name}
+        />
+        <InputControl
+          control={control}
+          name={'email'}
+          placeholder={'Enter email'}
+          error={errors?.email}
+        />
+        <InputControl
+          control={control}
+          name={'password'}
+          placeholder={'Enter password'}
+          error={errors?.password}
+        />
       </View>
 
-      <View style={styles.buttonContainer}>
+      <Button
+        title={'Submit'}
+        onPress={handleSubmit(formData => {
+          console.log(formData);
+          Auth.signUp(formData.name, formData.email, formData.password);
+        })}
+      />
+
+      {/* <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={() => Auth.signUp(name, email, password)}
           style={styles.button}>
           <Text style={styles.buttonText}>Sign up</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }

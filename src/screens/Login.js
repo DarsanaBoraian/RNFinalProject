@@ -10,6 +10,10 @@ import {
 import React, {useState} from 'react';
 import Auth from '../services/auth';
 import appColors from '../constants/appColors';
+import {useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import InputControl from '../components/InputControl';
+import * as yup from 'yup';
 /***
  * yarn add react-hook-form
  * yarn add yup
