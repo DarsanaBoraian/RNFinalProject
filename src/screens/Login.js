@@ -2,6 +2,7 @@ import {
   View,
   StyleSheet,
   TextInput,
+  Button,
   TouchableOpacity,
   Text,
   SafeAreaView,
@@ -21,8 +22,38 @@ import * as yup from 'yup';
  */
 
 export default function Login({navigation}) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
+
+  const schema = yup.object().shape({
+    email: yup
+      .string()
+      .required('Email is required')
+      .email('Invalid email')
+      .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'Invalid email'),
+
+    password: yup
+      .string()
+      .required('Last Name is required')
+      .matches(
+        /^[a-zA-Z\s]+$/,
+        'password must contain only letters and numbers',
+      ),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    mode: 'all',
+    resolver: yupResolver(schema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -33,8 +64,30 @@ export default function Login({navigation}) {
           style={styles.image}
         />
       </View>
-
       <View style={styles.inputContainer}>
+        <InputControl
+          control={control}
+          name={'email'}
+          placeholder={'Enter email'}
+          error={errors?.email}
+        />
+        <InputControl
+          control={control}
+          name={'password'}
+          placeholder={'Enter password'}
+          error={errors?.password}
+        />
+      </View>
+
+      <Button
+        title={'Submit'}
+        onPress={handleSubmit(formData => {
+          console.log(formData);
+          Auth.signIn(formData.email, formData.password);
+        })}
+      />
+
+      {/* <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
           onChangeText={text => setEmail(text)}
@@ -69,7 +122,7 @@ export default function Login({navigation}) {
           style={styles.buttonOutline}>
           <Text style={styles.buttonOutlineText}>Create user</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
