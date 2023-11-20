@@ -10,6 +10,11 @@ import {
 import React, {useState} from 'react';
 import Auth from '../services/auth';
 import appColors from '../constants/appColors';
+/***
+ * yarn add react-hook-form
+ * yarn add yup
+ * yarn add @hookform/resolvers
+ */
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
