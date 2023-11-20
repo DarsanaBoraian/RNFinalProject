@@ -4087,7 +4087,7 @@ internal-slot@^1.0.5:
     hasown "^2.0.0"
     side-channel "^1.0.4"
 
-invariant@^2.2.4:
+invariant@^2.2.2, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -5994,6 +5994,13 @@ react-native-maps@^1.8.0:
   integrity sha512-KfVZ03L42+a22Fkcl2uDe5d+73BweTlcRUzm2G+aQUJ7fHrBxj7CuXWtKMSNpVDiO3YDCWcshiiyjSXxkd/qOw==
   dependencies:
     "@types/geojson" "^7946.0.10"
+
+react-native-onesignal@^5.0.2:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-5.0.3.tgz#4fa7c3915956d638a53c72a4fa9277647cc5be35"
+  integrity sha512-S+FV613sLbB2a4oQ0EvP1CpvhGnwdcWviMAF4ia9Y3wKotrPCE5lzlaFWGMXmvoAJZTzar61LpFup+hXy0W3Ow==
+  dependencies:
+    invariant "^2.2.2"
 
 react-native-reanimated@^3.5.4:
   version "3.5.4"

@@ -50,6 +50,47 @@ PODS:
     - hermes-engine/Pre-built (= 0.72.7)
   - hermes-engine/Pre-built (0.72.7)
   - libevent (2.1.12)
+  - OneSignalXCFramework (5.0.4):
+    - OneSignalXCFramework/OneSignalComplete (= 5.0.4)
+  - OneSignalXCFramework/OneSignal (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalExtension
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
+    - OneSignalXCFramework/OneSignalUser
+  - OneSignalXCFramework/OneSignalComplete (5.0.4):
+    - OneSignalXCFramework/OneSignal
+    - OneSignalXCFramework/OneSignalInAppMessages
+    - OneSignalXCFramework/OneSignalLocation
+  - OneSignalXCFramework/OneSignalCore (5.0.4)
+  - OneSignalXCFramework/OneSignalExtension (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalOutcomes
+  - OneSignalXCFramework/OneSignalInAppMessages (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
+    - OneSignalXCFramework/OneSignalUser
+  - OneSignalXCFramework/OneSignalLocation (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalUser
+  - OneSignalXCFramework/OneSignalNotifications (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalExtension
+    - OneSignalXCFramework/OneSignalOutcomes
+  - OneSignalXCFramework/OneSignalOSCore (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+  - OneSignalXCFramework/OneSignalOutcomes (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+  - OneSignalXCFramework/OneSignalUser (5.0.4):
+    - OneSignalXCFramework/OneSignalCore
+    - OneSignalXCFramework/OneSignalNotifications
+    - OneSignalXCFramework/OneSignalOSCore
+    - OneSignalXCFramework/OneSignalOutcomes
   - PromisesObjC (2.3.1)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -353,6 +394,9 @@ PODS:
     - glog
   - react-native-maps (1.8.0):
     - React-Core
+  - react-native-onesignal (5.0.3):
+    - OneSignalXCFramework (= 5.0.4)
+    - React (< 1.0.0, >= 0.13.0)
   - react-native-safe-area-context (4.7.4):
     - React-Core
   - React-NativeModulesApple (0.72.7):
@@ -544,6 +588,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-maps (from `../node_modules/react-native-maps`)
+  - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -582,6 +627,7 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMSessionFetcher
     - libevent
+    - OneSignalXCFramework
     - PromisesObjC
     - RecaptchaInterop
     - Sentry
@@ -634,6 +680,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
+  react-native-onesignal:
+    :path: "../node_modules/react-native-onesignal"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
@@ -703,6 +751,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
   hermes-engine: 9180d43df05c1ed658a87cc733dc3044cf90c00a
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  OneSignalXCFramework: 7e0a6d68dda7e80b03069bd145232f480f8c2279
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 83bca1c184feb4d2e51c72c8369b83d641443f95
@@ -720,6 +769,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 8baadae51f01d867c3921213a25ab78ab4fbcd91
   React-logger: 8edc785c47c8686c7962199a307015e2ce9a0e4f
   react-native-maps: f699e0753c22c4d5c3a44d03895b193a4dbca6c2
+  react-native-onesignal: ade35db0b3bbdd8457bc69f1a353bb55382eefc0
   react-native-safe-area-context: 2cd91d532de12acdb0a9cbc8d43ac72a8e4c897c
   React-NativeModulesApple: ac9cea059dfe97cf3a4f00aa2774293bf5a99463
   React-perflogger: 31ea61077185eb1428baf60c0db6e2886f141a5a
