@@ -10,5 +10,5 @@ Sentry.init({
 });
 
 export default function App() {
-  return <MapTest />;
+  return <UserProfileEdit />;
 }

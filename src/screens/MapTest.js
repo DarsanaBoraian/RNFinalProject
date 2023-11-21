@@ -70,34 +70,17 @@ export default MapTest = () => {
           flex: 1,
           marginVertical: 20,
         }}>
-        <View style={{flex: 1}}>
-          <GooglePlacesAutocomplete
-            placeholder="Search"
-            onPress={(data, details = null) => {
-              // 'details' is provided when fetchDetails = true
-              console.log(data, details);
-            }}
-            query={{
-              key: 'AIzaSyDuOhi5_gYyFJ5ZCBK7NvxzEFmX7q3GA2Y',
-              language: 'en', // language of the results
-            }}
-            currentLocation={true}
-            currentLocationLabel="Current location"
-            nearbyPlacesAPI="GooglePlacesSearch" // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
-            debounce={300} // debounce the requests in ms. Set to 0 to remove debounce. By default 300ms.
-          />
-        </View>
-        {/* <GooglePlacesAutocomplete
+        <GooglePlacesAutocomplete
           placeholder="Search for a place"
           fetchDetails={true}
           onPress={handlePlaceSelect}
           query={{
-            key: 'AIzaSyDH149ZyrW8HQHvxGpTyuddhSl0b4zY9d8',
+            key: 'AIzaSyDuOhi5_gYyFJ5ZCBK7NvxzEFmX7q3GA2Y',
             language: 'en',
           }}
           nearbyPlacesAPI="GooglePlacesSearch"
           debounce={400} // Delay before making the request
-        /> */}
+        />
       </View>
       <MapView
         style={styles.map}

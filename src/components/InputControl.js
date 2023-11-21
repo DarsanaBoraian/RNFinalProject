@@ -2,25 +2,32 @@ import {View, Text, TextInput, StyleSheet} from 'react-native';
 import React from 'react';
 import {Controller} from 'react-hook-form';
 
-export default function InputControl({error, control, placeholder, name}) {
+export default function InputControl({
+  value,
+  error,
+  control,
+  placeholder,
+  name,
+}) {
   return (
     <View style={styles.container}>
       <Controller
         control={control}
+        name={name}
+        defaultValue={value || ''}
         rules={{required: true, validate: true}}
-        render={({field: {onChange, value}}) => {
+        render={({field}) => {
           return (
             <TextInput
               style={styles.input}
-              value={value}
-              onChangeText={onChange}
+              value={field.value}
+              onChangeText={field.onChange}
               placeholder={placeholder}
               autoCapitalize="none"
               autoCorrect={false}
             />
           );
         }}
-        name={name}
       />
 
       {error && error.message.length > 0 && (
