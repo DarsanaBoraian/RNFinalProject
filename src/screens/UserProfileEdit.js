@@ -1,8 +1,9 @@
 import {View, Text, ScrollView, StyleSheet, Button} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useForm} from 'react-hook-form';
+import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import InputControl from '../components/InputControl';
+import GenderSelector from '../components/GenderSelector';
 import MapView, {Marker} from 'react-native-maps';
 import firestore from '@react-native-firebase/firestore';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
@@ -135,12 +136,20 @@ export default function UserProfileEdit() {
         placeholder={'Enter email'}
         error={errors?.email}
       />
-      <InputControl
+      <Controller
+        name={'gender'}
+        control={control}
+        rules={{required: true, validate: true}}
+        render={({field: {onChange, value}}) => {
+          return <GenderSelector value={value} onGenderSelected={onChange} />;
+        }}
+      />
+      {/* <InputControl
         control={control}
         name={'gender'}
         placeholder={'Enter gender'}
         error={errors?.gender}
-      />
+      /> */}
       <InputControl
         control={control}
         name={'age'}
