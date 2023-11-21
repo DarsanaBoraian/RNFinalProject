@@ -42,17 +42,21 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    height: 60,
+    height: 40,
     marginHorizontal: 10,
+    borderRadius: 20,
   },
   cell: {
     flex: 1,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: 'skyblue',
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: 20,
+    marginRight: 10,
+    borderRadius: 20,
   },
   selectedCell: {
-    backgroundColor: 'grey',
+    backgroundColor: 'skyblue',
   },
 });

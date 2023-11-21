@@ -1,11 +1,12 @@
 import {View, Text, ScrollView, StyleSheet, Button} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useSyncExternalStore} from 'react';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import InputControl from '../components/InputControl';
 import GenderSelector from '../components/GenderSelector';
 import MapView, {Marker} from 'react-native-maps';
 import firestore from '@react-native-firebase/firestore';
+import {ColorPicker} from 'react-native-color-picker';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import * as yup from 'yup';
 
@@ -27,8 +28,6 @@ const schema = yup.object().shape({
 });
 
 export default function UserProfileEdit() {
-  const [selectedLocation, setSelectedLocation] = useState(null);
-
   const [locationName, setLocationName] = useState('United Kingdom');
 
   const [region, setRegion] = useState({
@@ -80,6 +79,14 @@ export default function UserProfileEdit() {
   };
 
   const onSubmit = async formData => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const generatedColor =
+      '#' +
+      Array.from(
+        {length: 6},
+        () => characters[Math.floor(Math.random() * characters.length)],
+      ).join('');
+
     try {
       // Add the user data to Firestore
       await firestore().collection('UserProfile').add({
@@ -90,10 +97,11 @@ export default function UserProfileEdit() {
         age: formData.age,
         gender: formData.gender,
         author: 'Darsana',
-        userColor: formData.userColor,
+        userColor: generatedColor,
       });
 
       console.log('Data added to Firestore successfully');
+      reset();
     } catch (error) {
       console.error('Error adding data to Firestore:', error);
     }
@@ -104,6 +112,7 @@ export default function UserProfileEdit() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: {errors},
   } = useForm({
     mode: 'all',
@@ -113,11 +122,13 @@ export default function UserProfileEdit() {
       lastName: '',
       email: '',
       userLocation: '',
+      userColor: '#3498db',
     },
   });
 
   return (
-    <ScrollView>
+    <ScrollView style={{marginTop: 20}}>
+      <Text style={styles.titleText}>User Info Form</Text>
       <InputControl
         control={control}
         name={'firstName'}
@@ -144,12 +155,7 @@ export default function UserProfileEdit() {
           return <GenderSelector value={value} onGenderSelected={onChange} />;
         }}
       />
-      {/* <InputControl
-        control={control}
-        name={'gender'}
-        placeholder={'Enter gender'}
-        error={errors?.gender}
-      /> */}
+
       <InputControl
         control={control}
         name={'age'}
@@ -164,7 +170,7 @@ export default function UserProfileEdit() {
         error={errors?.userColor}
       />
 
-      <View style={{height: 250, width: '100%'}}>
+      <View style={{height: 150, width: '100%'}}>
         <MapView
           style={styles.map}
           initialRegion={region}
@@ -178,11 +184,11 @@ export default function UserProfileEdit() {
             title={locationName}
           />
         </MapView>
-        <View style={styles.locationDetails}>
+        {/* <View style={styles.locationDetails}>
           <Text style={{fontWeight: 'bold', fontFamily: 'YoungSerif-Regular'}}>
             {locationName}
           </Text>
-        </View>
+        </View> */}
       </View>
       <InputControl
         control={control}
@@ -208,6 +214,14 @@ const styles = StyleSheet.create({
   map: {
     flex: 7,
     width: '100%',
+  },
+  titleText: {
+    color: 'skyblue',
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 15,
+    marginBottom: 10,
   },
   locationDetails: {
     position: 'absolute',

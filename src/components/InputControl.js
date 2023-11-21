@@ -44,9 +44,10 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     marginHorizontal: 10,
+    borderColor: 'skyblue',
+    borderWidth: 2,
     padding: 5,
-
-    backgroundColor: 'grey',
+    borderRadius: 10,
   },
   errorStyle: {
     marginHorizontal: 10,
