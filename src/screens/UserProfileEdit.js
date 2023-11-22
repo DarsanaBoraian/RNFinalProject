@@ -36,6 +36,7 @@ const schema = yup.object().shape({
 
 export default function UserProfileEdit() {
   const userName = useContext(UserContext);
+  const [userIdExists, setUserIdExists] = useState(false);
 
   const [locationName, setLocationName] = useState('United Kingdom');
 
@@ -50,41 +51,66 @@ export default function UserProfileEdit() {
 
   const fetchData = async () => {
     try {
-      const querySnapshot = await firestore().collection('UserProfile').get();
+      const userId = userName.uid;
+      const userRef = await firestore()
+        .collection('UserProfile')
+        .where('userId', '==', userId)
+        .get();
 
-      const documents = querySnapshot.docs.map(doc => doc.data());
-
-      setData(documents);
-      console.log(data);
+      if (!userRef.empty) {
+        const userData = userRef.docs[0].data();
+        setUserIdExists(true);
+        setLocationName(userData.userLocation || 'United Kingdom');
+        setValue('firstName', userData.firstName || '');
+        setValue('lastName', userData.lastName || '');
+        setValue('email', userData.email || '');
+        setValue('gender', userData.gender || '');
+        setValue('age', userData.age || '');
+        setValue('userColor', userData.userColor || '#3498db');
+        setValue('userLocation', userData.userLocation || 'United Kingdom');
+        setValue('userId', userData.userId);
+      }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data from Firestore:', error);
     }
   };
 
-  const handleMapPress = event => {
-    // Get the coordinates of the tapped location
-    const {latitude, longitude} = event.nativeEvent.coordinate;
+  useEffect(() => {
+    fetchData();
+  }, []); // Fetch data when the component mounts
 
-    // Update the region and location description
-    setRegion({
-      ...region,
-      latitude,
-      longitude,
-    });
+  const onUpdate = async () => {
+    try {
+      const userId = userName.uid;
+      const formData = getValues(); // Get the latest form data
+      console.log('update pressed:::');
+      console.log(formData);
 
-    // Fetch location details (reverse geocoding)
-    fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
-    )
-      .then(response => response.json())
-      .then(data => {
-        const location = data.display_name || 'Unknown Location';
-        setLocationName(location);
-        setValue('userLocation', location);
-      })
-      .catch(error => {
-        console.error(error);
+      // Document exists, update the user data
+      await firestore().collection('UserProfile').doc(userId).set(
+        {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          userLocation: formData.userLocation,
+          age: formData.age,
+          gender: formData.gender,
+          userColor: formData.userColor,
+          author: 'Darsana',
+          userId: userName.uid,
+        },
+        {merge: true},
+      );
+
+      console.log('Data updated in Firestore successfully');
+
+      // Optionally, set form values to reflect the update
+      Object.keys(formData).forEach(field => {
+        setValue(field, formData[field]);
       });
+    } catch (error) {
+      console.error('Error updating data in Firestore:', error);
+    }
   };
 
   const onSubmit = async formData => {
@@ -117,10 +143,36 @@ export default function UserProfileEdit() {
     }
   };
 
+  const handleMapPress = event => {
+    // Get the coordinates of the tapped location
+    const {latitude, longitude} = event.nativeEvent.coordinate;
+
+    // Update the region and location description
+    setRegion({
+      ...region,
+      latitude,
+      longitude,
+    });
+
+    // Fetch location details (reverse geocoding)
+    fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
+    )
+      .then(response => response.json())
+      .then(data => {
+        const location = data.display_name || 'Unknown Location';
+        setLocationName(location);
+        setValue('userLocation', location);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
   const {
     control,
     handleSubmit,
     setValue,
+    getValues,
     reset,
     formState: {errors},
   } = useForm({
@@ -137,7 +189,7 @@ export default function UserProfileEdit() {
 
   return (
     <ScrollView style={{marginTop: 20}}>
-      <Text style={styles.titleText}>User Info Form</Text>
+      {/* <Text style={styles.titleText}>User Info Form</Text> */}
       <InputControl
         control={control}
         name={'firstName'}
@@ -206,9 +258,13 @@ export default function UserProfileEdit() {
         error={errors?.userLocation}
         value={locationName} // Pass the value of locationName to InputControl
       />
-
-      <Button title={'Submit'} onPress={handleSubmit(onSubmit)} />
-
+      <View style={{flexDirection: 'row'}}>
+        <Button title={'Submit'} onPress={handleSubmit(onSubmit)} />
+        <Button
+          title={userIdExists ? 'Update' : 'Submit'}
+          onPress={userIdExists ? onUpdate : handleSubmit(onSubmit)}
+        />
+      </View>
       <Button title={'Fetch Data'} onPress={fetchData} />
     </ScrollView>
   );
