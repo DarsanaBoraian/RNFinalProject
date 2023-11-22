@@ -1,11 +1,18 @@
 import {View, Text, ScrollView, StyleSheet, Button} from 'react-native';
-import React, {useEffect, useState, useSyncExternalStore} from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import InputControl from '../components/InputControl';
 import GenderSelector from '../components/GenderSelector';
 import MapView, {Marker} from 'react-native-maps';
 import firestore from '@react-native-firebase/firestore';
+import {UserContext} from '../../navigator';
+
 import {ColorPicker} from 'react-native-color-picker';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import * as yup from 'yup';
@@ -28,6 +35,8 @@ const schema = yup.object().shape({
 });
 
 export default function UserProfileEdit() {
+  const userName = useContext(UserContext);
+
   const [locationName, setLocationName] = useState('United Kingdom');
 
   const [region, setRegion] = useState({
@@ -98,6 +107,7 @@ export default function UserProfileEdit() {
         gender: formData.gender,
         author: 'Darsana',
         userColor: generatedColor,
+        userId: userName.uid,
       });
 
       console.log('Data added to Firestore successfully');
@@ -111,7 +121,6 @@ export default function UserProfileEdit() {
     control,
     handleSubmit,
     setValue,
-    watch,
     reset,
     formState: {errors},
   } = useForm({

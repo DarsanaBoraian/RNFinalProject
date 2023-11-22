@@ -16,6 +16,8 @@ import {
 import Home from './Home';
 import Urdu from './Urdu';
 import French from './French';
+import UserProfileEdit from './UserProfileEdit';
+
 import {Auth} from '../services';
 
 /**
@@ -46,6 +48,28 @@ function NavDrawer() {
         drawerActiveTintColor: 'green', // Change this to your desired active color
         drawerInactiveTintColor: 'black', // Change this to your desired inactive color
       }}>
+      <Drawer.Screen
+        name="UserProfileEdit"
+        component={UserProfileEdit}
+        options={{
+          drawerIcon: ({focused, size}) => (
+            <ArrowRightCircleIcon size={40} strokeWidth={4.5} color={'black'} />
+          ),
+          headerRight: () => {
+            return (
+              <TouchableOpacity
+                onPress={() => Auth.signOut()}
+                style={{marginRight: 16}}>
+                <ArrowRightCircleIcon
+                  size={40}
+                  strokeWidth={4.5}
+                  color={'black'}
+                />
+              </TouchableOpacity>
+            );
+          },
+        }}
+      />
       <Drawer.Screen
         name="Home"
         component={Home}

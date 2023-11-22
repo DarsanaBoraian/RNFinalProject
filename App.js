@@ -12,5 +12,5 @@ Sentry.init({
 });
 
 export default function App() {
-  return <UserProfileEdit />;
+  return <AppContainer />;
 }

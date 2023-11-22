@@ -17,6 +17,7 @@ export default function Home() {
         }}>
         <Text>Sign Out</Text>
         <Text> User Name :{userName.displayName}</Text>
+        <Text> User Id :{userName.uid}</Text>
       </TouchableOpacity>
 
       <Text>{LocaleHelper.t('howru')}</Text>
