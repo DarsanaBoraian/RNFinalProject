@@ -1,4 +1,11 @@
-import {View, Text, ScrollView, StyleSheet, Button} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+  StyleSheet,
+  Button,
+} from 'react-native';
 import React, {
   useEffect,
   useContext,
@@ -12,33 +19,26 @@ import GenderSelector from '../components/GenderSelector';
 import MapView, {Marker} from 'react-native-maps';
 import firestore from '@react-native-firebase/firestore';
 import {UserContext} from '../../navigator';
-
+import MyPlaces from './MyPlaces';
 import {ColorPicker} from 'react-native-color-picker';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import * as yup from 'yup';
+import {useNavigation} from '@react-navigation/native';
 
 const schema = yup.object().shape({
-  firstName: yup
+  userName: yup
     .string()
     .required('First Name is required')
     .matches(/^[a-zA-Z\s]+$/, 'First name must contain only letters'),
-  lastName: yup
-    .string()
-    .required('Last Name is required')
-    .matches(/^[a-zA-Z\s]+$/, 'Last name must contain only letters'),
-  email: yup
-    .string()
-    .required('Email is required')
-    .email('Invalid email')
-    .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'Invalid email'),
-  userLocation: yup.string(),
 });
 
-export default function UserProfileEdit() {
-  const userName = useContext(UserContext);
+export default function UserMyPlaces() {
+  const userAuthName = useContext(UserContext);
   const [userIdExists, setUserIdExists] = useState(false);
+  const [userDataList, setUserDataList] = useState([]);
 
   const [locationName, setLocationName] = useState('United Kingdom');
+  const navigation = useNavigation();
 
   const [region, setRegion] = useState({
     latitude: 51.509865,
@@ -51,24 +51,28 @@ export default function UserProfileEdit() {
 
   const fetchData = async () => {
     try {
-      const userId = userName.uid;
+      const userId = userAuthName.uid;
       const userRef = await firestore()
-        .collection('UserProfile')
+        .collection('UserMyPlaces')
         .where('userId', '==', userId)
         .get();
 
       if (!userRef.empty) {
-        const userData = userRef.docs[0].data();
+        const userDataList = userRef.docs.map(doc => doc.data());
         setUserIdExists(true);
-        setLocationName(userData.userLocation || 'United Kingdom');
-        setValue('firstName', userData.firstName || '');
-        setValue('lastName', userData.lastName || '');
-        setValue('email', userData.email || '');
-        setValue('gender', userData.gender || '');
-        setValue('age', userData.age || '');
-        setValue('userColor', userData.userColor || '#3498db');
-        setValue('userLocation', userData.userLocation || 'United Kingdom');
-        setValue('userId', userData.userId);
+        setLocationName(userDataList[0].userLocation || 'United Kingdom');
+        setValue('userName', userDataList[0].userName || '');
+        setValue('userId', userDataList[0].userId);
+        setValue(
+          'userLocation',
+          userDataList[0].userLocation || 'United Kingdom',
+        );
+        setValue('latitude', userDataList[0].latitude || '');
+        setValue('longitude', userDataList[0].longitude || '');
+
+        // Update userDataList state with the fetched data
+        setUserDataList(userDataList);
+        console.log(userDataList);
       }
     } catch (error) {
       console.error('Error fetching data from Firestore:', error);
@@ -81,23 +85,20 @@ export default function UserProfileEdit() {
 
   const onUpdate = async () => {
     try {
-      const userId = userName.uid;
-      const formData = getValues(); // Get the latest form data
+      const userId = userAuthName.uid;
+      const placesFormData = getValues(); // Get the latest form data
       console.log('update pressed:::');
-      console.log(formData);
+      console.log(placesFormData);
 
       // Document exists, update the user data
-      await firestore().collection('UserProfile').doc(userId).set(
+      await firestore().collection('UserMyPlaces').doc(userId).set(
         {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          userLocation: formData.userLocation,
-          age: formData.age,
-          gender: formData.gender,
-          userColor: formData.userColor,
+          userName: placesFormData.userName,
+          userId: userAuthName.uid,
+          userLocation: placesFormData.userLocation,
+          longitude: placesFormData.longitude,
+          latitude: placesFormData.latitude,
           author: 'Darsana',
-          userId: userName.uid,
         },
         {merge: true},
       );
@@ -105,42 +106,33 @@ export default function UserProfileEdit() {
       console.log('Data updated in Firestore successfully');
 
       // Optionally, set form values to reflect the update
-      Object.keys(formData).forEach(field => {
-        setValue(field, formData[field]);
+      Object.keys(placesFormData).forEach(field => {
+        setValue(field, placesFormData[field]);
       });
     } catch (error) {
       console.error('Error updating data in Firestore:', error);
     }
   };
 
-  const onSubmit = async formData => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const generatedColor =
-      '#' +
-      Array.from(
-        {length: 6},
-        () => characters[Math.floor(Math.random() * characters.length)],
-      ).join('');
-
+  const onSubmit = async placesFormData => {
     try {
       // Add the user data to Firestore
-      await firestore().collection('UserProfile').add({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        userLocation: formData.userLocation,
-        age: formData.age,
-        gender: formData.gender,
+      await firestore().collection('UserMyPlaces').add({
+        userName: placesFormData.userName,
+        userId: userAuthName.uid,
+        userLocation: placesFormData.userLocation,
+        latitude: placesFormData.latitude,
+        longitude: placesFormData.longitude,
         author: 'Darsana',
-        userColor: generatedColor,
-        userId: userName.uid,
       });
 
       console.log('Data added to Firestore successfully');
-      //      reset();
+      reset();
     } catch (error) {
       console.error('Error adding data to Firestore:', error);
     }
+    fetchData();
+    navigation.navigate('MyPlaces');
   };
 
   const handleMapPress = event => {
@@ -160,9 +152,13 @@ export default function UserProfileEdit() {
     )
       .then(response => response.json())
       .then(data => {
-        const location = data.display_name || 'Unknown Location';
+        //const location = data.display_name || 'Unknown Location';
+        const location =
+          data.address.suburb + ', ' + data.address.city || 'Unknown Location';
         setLocationName(location);
         setValue('userLocation', location);
+        setValue('latitude', region.latitude);
+        setValue('longitude', region.longitude);
       })
       .catch(error => {
         console.error(error);
@@ -190,46 +186,12 @@ export default function UserProfileEdit() {
   return (
     <ScrollView style={{marginTop: 20}}>
       {/* <Text style={styles.titleText}>User Info Form</Text> */}
-      <InputControl
+      {/* <InputControl
         control={control}
-        name={'firstName'}
-        placeholder={'Enter First name'}
-        error={errors?.firstName}
-      />
-      <InputControl
-        control={control}
-        name={'lastName'}
-        placeholder={'Enter last name'}
-        error={errors?.lastName}
-      />
-      <InputControl
-        control={control}
-        name={'email'}
-        placeholder={'Enter email'}
-        error={errors?.email}
-      />
-      <Controller
-        name={'gender'}
-        control={control}
-        rules={{required: true, validate: true}}
-        render={({field: {onChange, value}}) => {
-          return <GenderSelector value={value} onGenderSelected={onChange} />;
-        }}
-      />
-
-      <InputControl
-        control={control}
-        name={'age'}
-        placeholder={'Enter age'}
-        error={errors?.age}
-      />
-
-      <InputControl
-        control={control}
-        name={'userColor'}
-        placeholder={'Enter userColor'}
-        error={errors?.userColor}
-      />
+        name={'userName'}
+        placeholder={'Enter User name'}
+        error={errors?.userName}
+      /> */}
 
       <View style={{height: 150, width: '100%'}}>
         <MapView
@@ -245,12 +207,22 @@ export default function UserProfileEdit() {
             title={locationName}
           />
         </MapView>
-        {/* <View style={styles.locationDetails}>
-          <Text style={{fontWeight: 'bold', fontFamily: 'YoungSerif-Regular'}}>
-            {locationName}
-          </Text>
-        </View> */}
       </View>
+      {/* <InputControl
+        control={control}
+        name={'latitude'}
+        placeholder={'latitude'}
+        error={errors?.latitude}
+        value={region.latitude} // Pass the value of locationName to InputControl
+      />
+      <InputControl
+        control={control}
+        name={'longitude'}
+        placeholder={'longitude'}
+        error={errors?.longitude}
+        value={region.longitude} // Pass the value of locationName to InputControl
+      /> */}
+
       <InputControl
         control={control}
         name={'userLocation'}
@@ -258,14 +230,13 @@ export default function UserProfileEdit() {
         error={errors?.userLocation}
         value={locationName} // Pass the value of locationName to InputControl
       />
-      <View style={{flexDirection: 'row'}}>
+      <View style={{flexDirection: 'row', justifyContent: 'center'}}>
         <Button title={'Submit'} onPress={handleSubmit(onSubmit)} />
-        <Button
+        {/* <Button
           title={userIdExists ? 'Update' : 'Submit'}
           onPress={userIdExists ? onUpdate : handleSubmit(onSubmit)}
-        />
+        /> */}
       </View>
-      <Button title={'Fetch Data'} onPress={fetchData} />
     </ScrollView>
   );
 }
@@ -275,6 +246,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  listItem: {
+    backgroundColor: '#fff', // Set background color
+    padding: 10, // Add padding
+    marginVertical: 5, // Add vertical margin
+    borderRadius: 8, // Add border radius for rounded corners
+    borderWidth: 1, // Add border width
+    borderColor: '#ddd', // Set border color
+  },
+  locationText: {
+    fontSize: 16, // Set font size
+    fontWeight: 'bold', // Set font weight
   },
   map: {
     flex: 7,

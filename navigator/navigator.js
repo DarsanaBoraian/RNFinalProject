@@ -12,6 +12,7 @@ import {
 } from 'react-native-responsive-screen';
 import {Auth} from '../src/services';
 import Home from '../src/screens/Home';
+import MyPlaces from '../src/screens/MyPlaces';
 import NavDrawer from '../src/screens/navDrawer';
 
 const Stack = createNativeStackNavigator();
@@ -23,6 +24,11 @@ export default function Mainnav() {
         name="NavDrawer"
         component={NavDrawer}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="MyPlaces"
+        component={MyPlaces}
+        options={{headerShown: true}}
       />
     </Stack.Navigator>
   );

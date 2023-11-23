@@ -19,6 +19,7 @@ import French from './French';
 import UserProfileEdit from './UserProfileEdit';
 
 import {Auth} from '../services';
+import UserMyPlaces from './UserMyPlaces';
 
 /**
  * https://reactnavigation.org/docs/drawer-navigator
@@ -51,6 +52,28 @@ function NavDrawer() {
       <Drawer.Screen
         name="UserProfileEdit"
         component={UserProfileEdit}
+        options={{
+          drawerIcon: ({focused, size}) => (
+            <ArrowRightCircleIcon size={40} strokeWidth={4.5} color={'black'} />
+          ),
+          headerRight: () => {
+            return (
+              <TouchableOpacity
+                onPress={() => Auth.signOut()}
+                style={{marginRight: 16}}>
+                <ArrowRightCircleIcon
+                  size={40}
+                  strokeWidth={4.5}
+                  color={'black'}
+                />
+              </TouchableOpacity>
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="UserMyPlaces"
+        component={UserMyPlaces}
         options={{
           drawerIcon: ({focused, size}) => (
             <ArrowRightCircleIcon size={40} strokeWidth={4.5} color={'black'} />
