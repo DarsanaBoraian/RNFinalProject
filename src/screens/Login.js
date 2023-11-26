@@ -99,17 +99,17 @@ export default function Login({navigation}) {
           style={styles.input}
           secureTextEntry
         />
-      </View>
+      </View> */}
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             Auth.signIn(email, password);
             console.log('signed in');
           }}
           style={styles.button}>
           <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={styles.buttonSpacing} />
 
@@ -122,7 +122,7 @@ export default function Login({navigation}) {
           style={styles.buttonOutline}>
           <Text style={styles.buttonOutlineText}>Create user</Text>
         </TouchableOpacity>
-      </View> */}
+      </View>
     </SafeAreaView>
   );
 }

@@ -131,7 +131,7 @@ export default function UserMyPlaces() {
     } catch (error) {
       console.error('Error adding data to Firestore:', error);
     }
-    fetchData();
+    //fetchData();
     navigation.navigate('MyPlaces');
   };
 
@@ -185,14 +185,6 @@ export default function UserMyPlaces() {
 
   return (
     <ScrollView style={{marginTop: 20}}>
-      {/* <Text style={styles.titleText}>User Info Form</Text> */}
-      {/* <InputControl
-        control={control}
-        name={'userName'}
-        placeholder={'Enter User name'}
-        error={errors?.userName}
-      /> */}
-
       <View style={{height: 150, width: '100%'}}>
         <MapView
           style={styles.map}
@@ -208,20 +200,6 @@ export default function UserMyPlaces() {
           />
         </MapView>
       </View>
-      {/* <InputControl
-        control={control}
-        name={'latitude'}
-        placeholder={'latitude'}
-        error={errors?.latitude}
-        value={region.latitude} // Pass the value of locationName to InputControl
-      />
-      <InputControl
-        control={control}
-        name={'longitude'}
-        placeholder={'longitude'}
-        error={errors?.longitude}
-        value={region.longitude} // Pass the value of locationName to InputControl
-      /> */}
 
       <InputControl
         control={control}
@@ -232,10 +210,6 @@ export default function UserMyPlaces() {
       />
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
         <Button title={'Submit'} onPress={handleSubmit(onSubmit)} />
-        {/* <Button
-          title={userIdExists ? 'Update' : 'Submit'}
-          onPress={userIdExists ? onUpdate : handleSubmit(onSubmit)}
-        /> */}
       </View>
     </ScrollView>
   );

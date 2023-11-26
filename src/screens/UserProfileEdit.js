@@ -260,10 +260,7 @@ export default function UserProfileEdit() {
       />
       <View style={{flexDirection: 'row'}}>
         <Button title={'Submit'} onPress={handleSubmit(onSubmit)} />
-        <Button
-          title={userIdExists ? 'Update' : 'Submit'}
-          onPress={userIdExists ? onUpdate : handleSubmit(onSubmit)}
-        />
+        <Button title={userIdExists ? 'Update' : 'Submit'} onPress={onUpdate} />
       </View>
       <Button title={'Fetch Data'} onPress={fetchData} />
     </ScrollView>
