@@ -37,6 +37,7 @@ export default function UserMyPlaces() {
 
   const [data, setData] = useState([]);
   const [myUserColor, setColor] = useState([]);
+  const [myLocation, setMyLocation] = useState('');
   const fetchData = async () => {
     try {
       const userId = userName.uid;
@@ -48,7 +49,8 @@ export default function UserMyPlaces() {
       if (!userRef.empty) {
         const userData = userRef.docs[0].data();
         setColor(userData.userColor);
-        console.log(myUserColor);
+        setLocationName(userData.userLocation);
+        console.log(locationName);
       }
     } catch (error) {
       console.error('Error fetching data from Firestore:', error);

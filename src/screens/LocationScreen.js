@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {View, Text, Platform} from 'react-native';
-import {LocationHelper} from '../../helpers';
+import LocationHelper from '../helpers/LocationHelper';
 
 const LocationScreen = () => {
   useEffect(() => {

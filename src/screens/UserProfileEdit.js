@@ -1,10 +1,11 @@
-import {View, Text, ScrollView, StyleSheet, Button} from 'react-native';
+import {View, Text, Modal, ScrollView, StyleSheet, Button} from 'react-native';
 import React, {
   useEffect,
   useContext,
   useState,
   useSyncExternalStore,
 } from 'react';
+import appColors from '../constants/appColors';
 import {useForm, Controller} from 'react-hook-form';
 import {yupResolver} from '@hookform/resolvers/yup';
 import InputControl from '../components/InputControl';
@@ -12,10 +13,18 @@ import GenderSelector from '../components/GenderSelector';
 import MapView, {Marker} from 'react-native-maps';
 import firestore from '@react-native-firebase/firestore';
 import {UserContext} from '../../navigator';
+import ColorPicker, {
+  Panel1,
+  Swatches,
+  Preview,
+  OpacitySlider,
+  HueSlider,
+} from 'reanimated-color-picker';
 
-import {ColorPicker} from 'react-native-color-picker';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import * as yup from 'yup';
+import {PaintBrushIcon} from 'react-native-heroicons/solid';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const schema = yup.object().shape({
   firstName: yup
@@ -35,9 +44,11 @@ const schema = yup.object().shape({
 });
 
 export default function UserProfileEdit() {
+  const [showModal, setShowModal] = useState(false);
+
   const userName = useContext(UserContext);
   const [userIdExists, setUserIdExists] = useState(false);
-
+  const [myUserColor, setColor] = useState('');
   const [locationName, setLocationName] = useState('United Kingdom');
 
   const [region, setRegion] = useState({
@@ -97,6 +108,7 @@ export default function UserProfileEdit() {
           gender: formData.gender,
           userColor: formData.userColor,
           author: 'Darsana',
+
           userId: userName.uid,
         },
         {merge: true},
@@ -111,6 +123,13 @@ export default function UserProfileEdit() {
     } catch (error) {
       console.error('Error updating data in Firestore:', error);
     }
+  };
+
+  const onSelectColor = ({hex}) => {
+    // do something with the selected color.
+    setColor(hex);
+    setValue('userColor', hex);
+    console.log(hex);
   };
 
   const onSubmit = async formData => {
@@ -132,7 +151,8 @@ export default function UserProfileEdit() {
         age: formData.age,
         gender: formData.gender,
         author: 'Darsana',
-        userColor: generatedColor,
+        //   userColor: myUserColor,
+        userColor: formData.userColor,
         userId: userName.uid,
       });
 
@@ -183,7 +203,7 @@ export default function UserProfileEdit() {
       lastName: '',
       email: '',
       userLocation: '',
-      userColor: '#3498db',
+      userColor: '',
     },
   });
 
@@ -224,12 +244,59 @@ export default function UserProfileEdit() {
         error={errors?.age}
       />
 
-      <InputControl
+      <View style={{justifyContent: 'center'}}>
+        <TouchableOpacity
+          style={{
+            borderColor: 'skyblue',
+            flexDirection: 'row',
+            borderWidth: 2,
+            marginTop: 10,
+            marginLeft: 50,
+            width: '30%',
+            marginBottom: 10,
+          }}
+          onPress={() => setShowModal(true)}>
+          <PaintBrushIcon size={20} strokeWidth={4.5} color={'skyblue'} />
+          <Text style={{marginLeft: 5, width: 80}}>{myUserColor}</Text>
+        </TouchableOpacity>
+        {/* <Button title="Color Picker" onPress={() => setShowModal(true)} /> */}
+
+        <Modal
+          visible={showModal}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setShowModal(false)}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white',
+            }}>
+            <ColorPicker
+              style={{width: '70%'}}
+              value="red"
+              onComplete={onSelectColor}>
+              <Preview hideInitialColor style={{marginBottom: 10}} />
+              <Panel1 />
+              <HueSlider style={{marginTop: 10}} />
+            </ColorPicker>
+
+            <Button
+              style={{justifyContent: 'center'}}
+              title="Ok"
+              onPress={() => setShowModal(false)}
+            />
+          </View>
+        </Modal>
+      </View>
+
+      {/* <InputControl
         control={control}
         name={'userColor'}
         placeholder={'Enter userColor'}
         error={errors?.userColor}
-      />
+      /> */}
 
       <View style={{height: 150, width: '100%'}}>
         <MapView
@@ -243,6 +310,7 @@ export default function UserProfileEdit() {
               longitude: region.longitude,
             }}
             title={locationName}
+            pinColor={myUserColor}
           />
         </MapView>
         {/* <View style={styles.locationDetails}>
