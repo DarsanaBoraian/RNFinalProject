@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  FlatList,
-  StyleSheet,
-  Button,
-} from 'react-native';
+import {View, Text, ScrollView, StyleSheet, Button} from 'react-native';
 import React, {
   useEffect,
   useContext,
@@ -25,48 +18,69 @@ import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete'
 import * as yup from 'yup';
 import {useNavigation} from '@react-navigation/native';
 
-export default function MyPlaces() {
-  const userAuthName = useContext(UserContext);
-  const [userIdExists, setUserIdExists] = useState(false);
-  const [userDataList, setUserDataList] = useState([]);
+const schema = yup.object().shape({
+  userLocation: yup.string(),
+});
 
-  const [locationName, setLocationName] = useState('United Kingdom');
+export default function MyPlaces() {
+  const userName = useContext(UserContext);
   const navigation = useNavigation();
 
-  const fetchData = async () => {
+  const [locationName, setLocationName] = useState('United Kingdom');
+
+  const [region, setRegion] = useState({
+    latitude: 51.509865,
+    longitude: -0.118092,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
+
+  const [data, setData] = useState([]);
+
+  const onSubmit = async formData => {
     try {
-      const userId = userAuthName.uid;
-      const userRef = await firestore()
-        .collection('UserMyPlaces')
-        .where('userId', '==', userId)
-        .get();
+      // Add the user data to Firestore
+      await firestore().collection('UserMyPlaces').add({
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        userLocation: formData.userLocation,
+        author: 'Darsana',
+        userId: userName.uid,
+      });
 
-      if (!userRef.empty) {
-        const userDataList = userRef.docs.map(doc => doc.data());
-        setUserIdExists(true);
-        setLocationName(userDataList[0].userLocation || 'United Kingdom');
-        setValue('userName', userDataList[0].userName || '');
-        setValue('userId', userDataList[0].userId);
-        setValue(
-          'userLocation',
-          userDataList[0].userLocation || 'United Kingdom',
-        );
-        setValue('latitude', userDataList[0].latitude || '');
-        setValue('longitude', userDataList[0].longitude || '');
-
-        // Update userDataList state with the fetched data
-        setUserDataList(userDataList);
-        console.log(userDataList);
-      }
+      console.log('Data added to Firestore successfully');
+      //      reset();
     } catch (error) {
-      console.error('Error fetching data from Firestore:', error);
+      console.error('Error adding data to Firestore:', error);
     }
+    navigation.navigate('MyPlaces');
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []); // Fetch data when the component mounts
+  const handleMapPress = event => {
+    // Get the coordinates of the tapped location
+    const {latitude, longitude} = event.nativeEvent.coordinate;
 
+    // Update the region and location description
+    setRegion({
+      ...region,
+      latitude,
+      longitude,
+    });
+
+    // Fetch location details (reverse geocoding)
+    fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
+    )
+      .then(response => response.json())
+      .then(data => {
+        const location = data.display_name || 'Unknown Location';
+        setLocationName(location);
+        setValue('userLocation', location);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
   const {
     control,
     handleSubmit,
@@ -76,24 +90,50 @@ export default function MyPlaces() {
     formState: {errors},
   } = useForm({
     mode: 'all',
+    resolver: yupResolver(schema),
+    defaultValues: {
+      latitude: '',
+      longitude: '',
+      userLocation: '',
+      author: 'Darsana',
+      userId: userName.uid,
+    },
   });
 
   return (
     <ScrollView style={{marginTop: 20}}>
-      {/* <Text style={styles.titleText}>My Places</Text> */}
+      {/* <Text style={styles.titleText}>User Info Form</Text> */}
 
-      <FlatList
-        data={userDataList}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({item}) => (
-          <View style={styles.listItem}>
-            <Text style={styles.locationText}>{item.latitude}</Text>
-            <Text style={styles.locationText}>{item.longitude}</Text>
-
-            <Text style={styles.locationText}>{item.userLocation}</Text>
-          </View>
-        )}
+      <View style={{height: 150, width: '100%'}}>
+        <MapView
+          style={styles.map}
+          initialRegion={region}
+          onRegionChange={newRegion => setRegion(newRegion)}
+          onPress={handleMapPress}>
+          <Marker
+            coordinate={{
+              latitude: region.latitude,
+              longitude: region.longitude,
+            }}
+            title={locationName}
+          />
+        </MapView>
+        {/* <View style={styles.locationDetails}>
+          <Text style={{fontWeight: 'bold', fontFamily: 'YoungSerif-Regular'}}>
+            {locationName}
+          </Text>
+        </View> */}
+      </View>
+      <InputControl
+        control={control}
+        name={'userLocation'}
+        placeholder={'User Location'}
+        error={errors?.userLocation}
+        value={locationName} // Pass the value of locationName to InputControl
       />
+      <View style={{flexDirection: 'row'}}>
+        <Button title={'Submit'} onPress={handleSubmit(onSubmit)} />
+      </View>
     </ScrollView>
   );
 }
@@ -103,18 +143,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  listItem: {
-    backgroundColor: '#fff', // Set background color
-    padding: 10, // Add padding
-    marginVertical: 5, // Add vertical margin
-    borderRadius: 8, // Add border radius for rounded corners
-    borderWidth: 1, // Add border width
-    borderColor: '#ddd', // Set border color
-  },
-  locationText: {
-    fontSize: 16, // Set font size
-    fontWeight: 'bold', // Set font weight
   },
   map: {
     flex: 7,

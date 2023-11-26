@@ -20,6 +20,7 @@ import UserProfileEdit from './UserProfileEdit';
 
 import {Auth} from '../services';
 import UserMyPlaces from './UserMyPlaces';
+import MyPlaces from './MyPlaces';
 
 /**
  * https://reactnavigation.org/docs/drawer-navigator
